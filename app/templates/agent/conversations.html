@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}My Conversations — AI Marketing{% endblock %}
+{% block page_title %}My Conversations{% endblock %}
+
+{% block sidebar_nav %}
+<li>
+  <a href="/agent/dashboard" class="nav-link text-white-50">
+    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+  </a>
+</li>
+<li>
+  <a href="/agent/conversations" class="nav-link active text-white">
+    <i class="bi bi-chat-square-text me-2"></i>My Conversations
+  </a>
+</li>
+<li>
+  <a href="/chat/" class="nav-link text-white-50">
+    <i class="bi bi-robot me-2"></i>AI Chat
+  </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div>
+    <h5 class="fw-bold mb-1">My Conversations</h5>
+    <span class="text-muted small">{{ total }} conversation(s)</span>
+  </div>
+  <a href="/chat/" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i>New Chat
+  </a>
+</div>
+
+<!-- Search -->
+<form method="get" action="/agent/conversations" class="mb-4">
+  <div class="input-group shadow-sm" style="max-width:480px">
+    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+    <input type="text" class="form-control border-start-0" name="search"
+           value="{{ search }}" placeholder="Search conversations…" />
+    <button class="btn btn-primary" type="submit">Search</button>
+    {% if search %}
+    <a href="/agent/conversations" class="btn btn-outline-secondary">
+      <i class="bi bi-x-lg"></i>
+    </a>
+    {% endif %}
+  </div>
+</form>
+
+{% if conversations %}
+<div class="d-flex flex-column gap-3">
+  {% for conv in conversations %}
+  <div class="card border-0 shadow-sm conv-card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="badge bg-success-subtle text-success border border-success-subtle">
+          <i class="bi bi-person-badge me-1"></i>Me
+        </span>
+        <span class="text-muted small">
+          <i class="bi bi-clock me-1"></i>{{ conv.created_at.strftime('%b %d, %Y %H:%M') }}
+        </span>
+      </div>
+      <div class="conv-message mb-2">
+        <span class="conv-label"><i class="bi bi-person-fill me-1"></i>Question</span>
+        <p class="mb-0 small">{{ conv.message }}</p>
+      </div>
+      <div class="conv-response">
+        <span class="conv-label"><i class="bi bi-robot me-1"></i>AI Response</span>
+        <p class="mb-0 small conv-response-text collapsed-text" id="resp-{{ conv.id }}">
+          {{ conv.response }}
+        </p>
+        <button class="btn btn-link btn-sm p-0 mt-1 text-muted show-more-btn"
+                onclick="toggleResponse({{ conv.id }}, this)">
+          Show more <i class="bi bi-chevron-down"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if pages > 1 %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+      <a class="page-link" href="?page={{ page - 1 }}&search={{ search }}">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+    </li>
+    {% for p in range(1, pages + 1) %}
+    <li class="page-item {% if p == page %}active{% endif %}">
+      <a class="page-link" href="?page={{ p }}&search={{ search }}">{{ p }}</a>
+    </li>
+    {% endfor %}
+    <li class="page-item {% if page >= pages %}disabled{% endif %}">
+      <a class="page-link" href="?page={{ page + 1 }}&search={{ search }}">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </li>
+  </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-chat-square fs-1 d-block mb-2 opacity-25"></i>
+  {% if search %}No conversations match "<strong>{{ search }}</strong>".{% else %}No conversations yet.{% endif %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleResponse(id, btn) {
+  const el = document.getElementById('resp-' + id);
+  el.classList.toggle('collapsed-text');
+  btn.innerHTML = el.classList.contains('collapsed-text')
+    ? 'Show more <i class="bi bi-chevron-down"></i>'
+    : 'Show less <i class="bi bi-chevron-up"></i>';
+}
+</script>
+{% endblock %}

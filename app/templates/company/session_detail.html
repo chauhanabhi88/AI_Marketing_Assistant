@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{{ session.title }} — AI Marketing{% endblock %}
+{% block page_title %}{{ session.title }}{% endblock %}
+
+{% block sidebar_nav %}
+<li>
+  <a href="/company/dashboard" class="nav-link text-white-50">
+    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+  </a>
+</li>
+<li>
+  <a href="/company/agents" class="nav-link text-white-50">
+    <i class="bi bi-people me-2"></i>Manage Agents
+  </a>
+</li>
+<li>
+  <a href="/company/conversations" class="nav-link active text-white">
+    <i class="bi bi-chat-square-text me-2"></i>All Conversations
+  </a>
+</li>
+<li>
+  <a href="/chat/" class="nav-link text-white-50">
+    <i class="bi bi-robot me-2"></i>AI Chat
+  </a>
+</li>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="d-flex align-items-start gap-3 mb-4 flex-wrap">
+  <a href="/company/conversations" class="btn btn-outline-secondary btn-sm flex-shrink-0 mt-1">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+  <div class="flex-grow-1">
+    <h5 class="fw-bold mb-1">{{ session.title }}</h5>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      {% if owner_type == 'company' %}
+      <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+        <i class="bi bi-building me-1"></i>{{ owner_name }}
+      </span>
+      {% else %}
+      <span class="badge bg-success-subtle text-success border border-success-subtle">
+        <i class="bi bi-person-badge me-1"></i>{{ owner_name }}
+      </span>
+      {% endif %}
+      <span class="text-muted small">
+        <i class="bi bi-chat-dots me-1"></i>{{ conversations|length }} message(s)
+      </span>
+      <span class="text-muted small">
+        <i class="bi bi-clock me-1"></i>
+        {% if session.updated_at %}
+          {{ session.updated_at.strftime('%b %d, %Y %H:%M') }}
+        {% else %}
+          {{ session.created_at.strftime('%b %d, %Y %H:%M') }}
+        {% endif %}
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Conversation list -->
+{% if conversations %}
+<div class="d-flex flex-column gap-3">
+  {% for conv in conversations %}
+  <div class="card border-0 shadow-sm conv-card">
+    <div class="card-body">
+
+      <div class="text-end mb-2">
+        <span class="text-muted small">
+          <i class="bi bi-clock me-1"></i>{{ conv.created_at.strftime('%b %d, %Y %H:%M') }}
+        </span>
+      </div>
+
+      <!-- User message -->
+      <div class="conv-message mb-2">
+        <span class="conv-label"><i class="bi bi-person-fill me-1"></i>Question</span>
+        <p class="mb-0 small">{{ conv.message }}</p>
+      </div>
+
+      <!-- AI response (collapsible) -->
+      <div class="conv-response">
+        <span class="conv-label"><i class="bi bi-robot me-1"></i>AI Response</span>
+        <p class="mb-0 small collapsed-text" id="resp-{{ conv.id }}">{{ conv.response }}</p>
+        <button class="btn btn-link btn-sm p-0 mt-1 text-muted"
+                onclick="toggleResponse({{ conv.id }}, this)">
+          Show more <i class="bi bi-chevron-down"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-chat-square fs-1 d-block mb-3 opacity-25"></i>
+  <p class="mb-0">No messages in this session yet.</p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleResponse(id, btn) {
+  const el = document.getElementById('resp-' + id);
+  el.classList.toggle('collapsed-text');
+  btn.innerHTML = el.classList.contains('collapsed-text')
+    ? 'Show more <i class="bi bi-chevron-down"></i>'
+    : 'Show less <i class="bi bi-chevron-up"></i>';
+}
+</script>
+{% endblock %}

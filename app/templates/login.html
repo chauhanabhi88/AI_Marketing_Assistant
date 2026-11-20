@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — AI Marketing Assistant</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="auth-body">
+
+<div class="auth-container">
+
+  <!-- Logo -->
+  <div class="text-center mb-4">
+    <div class="auth-logo mx-auto mb-3">
+      <i class="bi bi-robot fs-1 text-primary"></i>
+    </div>
+    <h4 class="fw-bold">AI Marketing Assistant</h4>
+    <p class="text-muted small">Sign in to your account</p>
+  </div>
+
+  <!-- Alerts -->
+  {% if registered %}
+  <div class="alert alert-success d-flex align-items-center gap-2" role="alert">
+    <i class="bi bi-check-circle-fill"></i>
+    Registration successful! Please sign in.
+  </div>
+  {% endif %}
+  {% if error %}
+  <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    {{ error }}
+  </div>
+  {% endif %}
+
+  <!-- Card -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+
+      <!-- User type toggle -->
+      <div class="btn-group w-100 mb-4" role="group" id="userTypeGroup">
+        <input type="radio" class="btn-check" name="userTypePicker" id="typeCompany" value="company" autocomplete="off" checked />
+        <label class="btn btn-outline-primary" for="typeCompany">
+          <i class="bi bi-building me-1"></i>Company
+        </label>
+        <input type="radio" class="btn-check" name="userTypePicker" id="typeAgent" value="agent" autocomplete="off" />
+        <label class="btn btn-outline-primary" for="typeAgent">
+          <i class="bi bi-person-badge me-1"></i>Agent
+        </label>
+      </div>
+
+      <form method="post" action="/login" id="loginForm">
+        <input type="hidden" name="user_type" id="userTypeHidden" value="company" />
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold small" for="email">Email address</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input type="email" class="form-control" id="email" name="email"
+                   placeholder="you@company.com" required autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold small" for="password">Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control" id="password" name="password"
+                   placeholder="••••••••" required autocomplete="current-password" />
+            <button class="btn btn-outline-secondary" type="button" id="togglePwd">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <p class="text-center mt-3 small text-muted">
+    Don't have an account?
+    <a href="/register" class="fw-semibold text-decoration-none">Create company account</a>
+  </p>
+
+  <!-- Dark mode toggle -->
+  <div class="text-center mt-2">
+    <button class="btn btn-sm btn-link text-muted" id="themeToggle">
+      <i class="bi bi-moon-stars me-1"></i>Toggle dark mode
+    </button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/js/main.js"></script>
+<script>
+  // Sync radio to hidden field
+  document.querySelectorAll('input[name="userTypePicker"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.getElementById('userTypeHidden').value = radio.value;
+    });
+  });
+  // Toggle password visibility
+  document.getElementById('togglePwd').addEventListener('click', function () {
+    const pwd = document.getElementById('password');
+    const icon = this.querySelector('i');
+    if (pwd.type === 'password') {
+      pwd.type = 'text';
+      icon.className = 'bi bi-eye-slash';
+    } else {
+      pwd.type = 'password';
+      icon.className = 'bi bi-eye';
+    }
+  });
+</script>
+</body>
+</html>
