@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
 
     # Gemini
-    GEMINI_API_KEY: str = "AIzaSyAQ_tyRqs9r8VlSjR7t7DLmEitD3QlmGC0"
+    GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.0-flash"
 
     # App
